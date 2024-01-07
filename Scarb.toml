@@ -1,0 +1,8 @@
+[package]
+cairo-version = "2.3.1"
+description = "Common library for Haiko AMM and strategies."
+name = "haiko_lib"
+version = "0.1.0"
+
+[dependencies]
+starknet = "2.3.1"
