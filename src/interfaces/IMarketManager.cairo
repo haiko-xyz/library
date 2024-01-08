@@ -125,7 +125,7 @@ trait IMarketManager<TContractState> {
     /// # Arguments
     /// * `order_id` - order id
     /// * `market_id` - market id
-    //
+    ///
     /// # Returns
     /// * `base_amount` - amount of base tokens inside order
     /// * `quote_amount` - amount of quote tokens inside order
@@ -169,7 +169,7 @@ trait IMarketManager<TContractState> {
     /// * `start_limit` - initial limit (shifted)
     /// * `controller` - market controller for upgrading market configs, or 0 if none
     /// * `configs` - (optional) custom market configurations
-    //
+    ///
     /// # Returns
     /// * `market_id` - Market ID
     fn create_market(
@@ -187,13 +187,13 @@ trait IMarketManager<TContractState> {
     ) -> felt252;
 
     /// Add or remove liquidity from a position, or collect fees by passing 0 as liquidity delta.
-    //
+    ///
     /// # Arguments
     /// * `market_id` - Market ID
     /// * `lower_limit` - Lower limit at which position starts
     /// * `upper_limit` - Higher limit at which position ends
     /// * `liquidity_delta` - Amount of liquidity to add or remove
-    //
+    ///
     /// # Returns
     /// * `base_amount` - Amount of base tokens transferred in (+ve) or out (-ve), including fees
     /// * `quote_amount` - Amount of quote tokens transferred in (+ve) or out (-ve), including fees
@@ -215,7 +215,7 @@ trait IMarketManager<TContractState> {
     /// * `is_bid` - whether bid order
     /// * `limit` - limit at which order is placed
     /// * `liquidity_delta` - amount of liquidity to add or remove
-    //
+    ///
     /// # Returns
     /// * `order_id` - order id
     fn create_order(
@@ -232,7 +232,7 @@ trait IMarketManager<TContractState> {
     /// # Arguments
     /// * `market_id` - market id
     /// * `order_id` - order id
-    //
+    ///
     /// # Returns
     /// * `base_amount` - amount of base tokens collected
     /// * `quote_amount` - amount of quote tokens collected
@@ -241,7 +241,7 @@ trait IMarketManager<TContractState> {
     ) -> (u256, u256);
 
     /// Swap tokens through a market.
-    //
+    ///
     /// # Arguments
     /// * `market_id` - ID of market to execute swap through
     /// * `is_buy` - whether swap is a buy or sell
@@ -250,7 +250,7 @@ trait IMarketManager<TContractState> {
     /// * `threshold_sqrt_price` - maximum sqrt price to swap at for buys, minimum for sells
     /// * `threshold_amount` - minimum amount out for exact input, or max amount in for exact output
     /// * `deadline` - deadline for swap to be executed by
-    //
+    ///
     /// # Returns
     /// * `amount_in` - amount of tokens swapped in gross of fees
     /// * `amount_out` - amount of tokens swapped out net of fees
@@ -275,7 +275,7 @@ trait IMarketManager<TContractState> {
     /// * `route` - list of market ids defining the route to swap through
     /// * `threshold_amount` - minimum amount out
     /// * `deadline` - deadline for swap to be executed by
-    //
+    ///
     /// # Returns
     /// * `amount_out` - amount of tokens swapped out net of fees
     fn swap_multiple(
@@ -292,7 +292,7 @@ trait IMarketManager<TContractState> {
     /// This is the safest way to obtain a quote as it does not rely on the strategy to
     /// correctly report its queued and placed positions.
     /// The first entry in the returned array is 'Quote' to distinguish it from other errors.
-    //
+    ///
     /// # Arguments
     /// * `market_id` - market id
     /// * `is_buy` - whether swap is a buy or sell
@@ -315,7 +315,7 @@ trait IMarketManager<TContractState> {
     /// * `out_token` - out token address
     /// * `amount` - amount of tokens to swap in
     /// * `route` - list of market ids defining the route to swap through
-    //
+    ///
     /// # Returns (as error message)
     /// * `amount_out` - amount of tokens swapped out net of fees
     fn quote_multiple(
@@ -331,14 +331,14 @@ trait IMarketManager<TContractState> {
     /// reports its queued and placed positions. This function is intended for use by on-chain
     /// callers that cannot retrieve `quote` via error message. Alternatively, it can be used 
     /// to obtain guaranteed correct quotes for non-strategy markets.
-    //
+    ///
     /// # Arguments
     /// * `market_id` - market id
     /// * `is_buy` - whether swap is a buy or sell
     /// * `amount` - amount of tokens to swap
     /// * `exact_input` - true if `amount` is exact input, or false if exact output
     /// * `ignore_strategy` - whether to ignore strategy positions when fetching quote
-    //
+    ///
     /// # Returns
     /// * `amount` - amount out (if exact input) or amount in (if exact output)
     fn unsafe_quote(
@@ -355,14 +355,14 @@ trait IMarketManager<TContractState> {
     /// reports its queued and placed positions. This function is intended for use by on-chain
     /// callers that cannot retrieve `quote_multiple` via error message. Alternatively, it can 
     /// be used to obtain guaranteed correct quotes for non-strategy markets.
-    //
+    ///
     /// # Arguments
     /// * `in_token` - in token address
     /// * `out_token` - out token address
     /// * `amount` - amount of tokens to swap in
     /// * `route` - list of market ids defining the route to swap through
     /// * `ignore_strategy` - whether to ignore strategy positions when fetching quote
-    //
+    ///
     /// # Returns
     /// * `amount_out` - amount of tokens swapped out net of fees
     fn unsafe_quote_multiple(
@@ -376,34 +376,34 @@ trait IMarketManager<TContractState> {
 
     /// Initiates a flash loan.
     /// Flash loan receiver must be a contract that implements `ILoanReceiver`.
-    //
+    ///
     /// # Arguments
     /// * `token` - contract address of the token borrowed
     /// * `amount` - borrow amount requested
     fn flash_loan(ref self: TContractState, token: ContractAddress, amount: u256);
 
     /// Mint ERC721 to represent an open liquidity position.
-    //
+    ///
     /// # Arguments
     /// * `position_id` - id of position mint
     fn mint(ref self: TContractState, position_id: felt252);
 
     /// Burn ERC721 to unlock capital from open liquidity positions.
-    //
+    ///
     /// # Arguments
     /// * `position_id` - id of position to burn
     fn burn(ref self: TContractState, position_id: felt252);
 
     /// Whitelist a market for creation.
     /// Callable by owner only.
-    //
+    ///
     /// # Arguments
     /// * `market_id` - market id
     fn whitelist(ref self: TContractState, market_ids: Array<felt252>);
 
     /// Collect protocol fees.
     /// Callable by owner only.
-    //
+    ///
     /// # Arguments
     /// * `receiver` - Recipient of collected fees
     /// * `token` - Token to collect fees in
@@ -417,12 +417,12 @@ trait IMarketManager<TContractState> {
 
     /// Sweeps excess tokens from contract.
     /// Used to collect tokens sent to contract by mistake.
-    //
+    ///
     /// # Arguments
     /// * `receiver` - Recipient of swept tokens
     /// * `token` - Token to sweep
     /// * `amount` - Requested amount of token to sweep
-    //
+    ///
     /// # Returns
     /// * `amount_collected` - Amount of base token swept
     fn sweep(
@@ -431,7 +431,7 @@ trait IMarketManager<TContractState> {
 
     /// Request transfer ownership of the contract.
     /// Part 1 of 2 step process to transfer ownership.
-    //
+    ///
     /// # Arguments
     /// * `new_owner` - New owner of the contract
     fn transfer_owner(ref self: TContractState, new_owner: ContractAddress);
@@ -442,7 +442,7 @@ trait IMarketManager<TContractState> {
 
     /// Set flash loan fee.
     /// Callable by owner only.
-    //
+    ///
     /// # Arguments
     /// * `token` - contract address of the token borrowed
     /// * `fee` - flash loan fee denominated in bps
@@ -466,7 +466,7 @@ trait IMarketManager<TContractState> {
 
     /// Upgrade contract class.
     /// Callable by owner only.
-    //
+    ///
     /// # Arguments
     /// * `new_class_hash` - new class hash of contract
     fn upgrade(ref self: TContractState, new_class_hash: ClassHash);

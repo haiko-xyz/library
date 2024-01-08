@@ -9,7 +9,7 @@ use option::OptionTrait;
 /// # Arguments
 /// * `quote` - The quote number.
 /// * `exp` - The exponent.
-//
+///
 /// # Returns
 /// * `u256` - The result of the exponentiation.
 fn pow(quote: u256, exp: u256) -> u256 {
@@ -26,12 +26,12 @@ fn pow(quote: u256, exp: u256) -> u256 {
 }
 
 /// Multiplies two u256 numbers and divides the result by a third. Optionally rounds up to the nearest integer.
-//
+///
 /// # Arguments
 /// * `a` - The first multiplicand.
 /// * `b` - The second multiplicand.
 /// * `c` - The divisor.
-//
+///
 /// # Returns
 /// * `result` - Result.
 fn mul_div(a: u256, b: u256, c: u256, round_up: bool) -> u256 {

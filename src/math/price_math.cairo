@@ -19,11 +19,11 @@ use haiko_lib::constants::{
 ////////////////////////////////
 
 /// Convert limit from i32 (range -7,906,625 to 7,906,625) to u32 (range 0 to 15,813,251).
-//
+///
 /// # Arguments
 /// * `limit` - unshifted limit
 /// * `width` - limit width
-//
+///
 /// # Returns
 /// * `shifted_limit` - shifted limit
 fn shift_limit(limit: i32, width: u32) -> u32 {
@@ -34,11 +34,11 @@ fn shift_limit(limit: i32, width: u32) -> u32 {
 }
 
 /// Convert limit from u32 (range 0 to 15,813,251) to i32 (range -7,906,625 to 7,906,625).
-//
+///
 /// # Arguments
 /// * `limit` - shifted limit
 /// * `width` - limit width
-//
+///
 /// # Returns
 /// * `unshifted_limit` - unshifted limit
 fn unshift_limit(limit: u32, width: u32) -> i32 {
@@ -48,10 +48,10 @@ fn unshift_limit(limit: u32, width: u32) -> i32 {
 }
 
 /// Calculate offset used to shift limit.
-//
+///
 /// # Arguments
 /// * `width` - limit width
-//
+///
 /// # Returns
 /// * `offset` - offset to shift limit by
 fn offset(width: u32) -> u32 {
@@ -60,10 +60,10 @@ fn offset(width: u32) -> u32 {
 
 /// Returns the maximum shifted limit given a price width.
 /// Note a corresponding `min_limit` function does not exist because it is always 0.
-//
+///
 /// # Arguments
 /// * `width` - limit width of market
-//
+///
 /// # Returns
 /// * `max_limit` - offset to shift limit by
 fn max_limit(width: u32) -> u32 {
@@ -72,11 +72,11 @@ fn max_limit(width: u32) -> u32 {
 
 /// Convert limit to sqrt price.
 ///   Formula: price = 1.00001 ^ (limit / 2)
-//
+///
 /// # Arguments
 /// * `limit` - shifted limit
 /// * `width` - limit width
-//
+///
 /// # Returns
 /// * `sqrt_price` - sqrt price encoded as UD47x28
 fn limit_to_sqrt_price(limit: u32, width: u32) -> u256 {
@@ -98,7 +98,7 @@ fn limit_to_sqrt_price(limit: u32, width: u32) -> u256 {
 /// # Arguments
 /// * `sqrt_price` - sqrt price encoded as UD47x28
 /// * `width` - limit width
-//
+///
 /// # Returns
 /// * `limit` - shifted limit
 fn sqrt_price_to_limit(sqrt_price: u256, width: u32) -> u32 {
@@ -139,7 +139,7 @@ fn sqrt_price_to_limit(sqrt_price: u256, width: u32) -> u32 {
 /// * `price` - price encoded as UD47x28
 /// * `width` - limit width
 /// * `round_up` - round up if true, round down if false
-//
+///
 /// # Returns
 /// * `limit` - shifted limit
 fn price_to_limit(price: u256, width: u32, round_up: bool) -> u32 {
@@ -209,10 +209,10 @@ fn _log2_helper(y: u256, result_uint: u256, delta: u256,) -> u256 {
 }
 
 /// Helper function to calculate the exponent 1.00001 ^ x.
-//
+///
 /// # Arguments
 /// * `x` - Exponent
-//
+///
 /// # Returns
 /// * `result` - Result of exponentiation
 fn _exp1_00001(x: i32) -> u256 {

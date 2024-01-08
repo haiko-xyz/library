@@ -36,7 +36,7 @@ struct MarketInfo {
 }
 
 /// Granular market settings for creating custom market types.
-//
+///
 /// Notes: 
 ///  1. Each market setting controls an aspect of a market (e.g. liquidity positions, limit orders),
 ///     or the entire market (e.g. pausing, deprecation), and can be either fixed or upgradeable. 
@@ -45,7 +45,7 @@ struct MarketInfo {
 ///  2. A market owner can permanently fix an upgradeable market setting at any time, but not vice versa. 
 ///  3. By default, all features are enabled and upgradeable.
 ///  4. The market owner must be set during `create_market` to enable upgradeable settings.
-//
+///
 /// * `limits` - valid ranges of lower and upper limits
 /// * `add_liquidity` - whether adding liquidity is enabled
 /// * `remove_liquidity` - whether removing liquidity is enabled
@@ -82,7 +82,7 @@ impl DefaultMarketConfigs of Default<MarketConfigs> {
 }
 
 /// An individual market config.
-//
+///
 /// * `value` - current value
 /// * `fixed` - whether config is fixed at its current value
 #[derive(Copy, Drop, Serde, PartialEq)]
@@ -92,7 +92,7 @@ struct Config<T> {
 }
 
 /// Struct representing valid limits.
-//
+///
 /// * `min_lower` - minimum lower limit
 /// * `max_lower` - maximum lower limit
 /// * `min_upper` - minimum upper limit
@@ -125,7 +125,7 @@ impl DefaultValidLimits of Default<ValidLimits> {
 }
 
 /// Market setting controlling the status of a feature.
-//
+///
 /// * `Enabled` - setting is enabled for all users
 /// * `Disabled` - setting is disabled for all users
 /// * `OnlyOwner` - setting is enabled only for market owner
@@ -139,7 +139,7 @@ enum ConfigOption {
 }
 
 /// Mutable state of a market.
-//
+///
 /// * `liquidity` - active liquidity in market
 /// * `curr_limit` - current limit (shifted)
 /// * `curr_sqrt_price` - current sqrt price of market (constrained to felt252)
@@ -157,7 +157,7 @@ struct MarketState {
 }
 
 /// An individual price limit.
-//
+///
 /// * `liquidity` - total liquidity referenced by limit
 /// * `liquidity_delta` - liquidity added or removed from limit when it is traversed
 /// * `base_fee_factor` - cumulative base fee factor outside of current price (constrained to felt252)
@@ -173,7 +173,7 @@ struct LimitInfo {
 }
 
 /// A liquidity position.
-//
+///
 /// * `market_id` - market id of position
 /// * `lower_limit` - lower limit of position
 /// * `upper_limit` - upper limit of position
@@ -191,7 +191,7 @@ struct Position {
 }
 
 /// Information about batched limit orders within a nonce.
-//
+///
 /// * `liquidity` - total liquidity of limit orders in batch
 /// * `filled` - whether batch has been fully filled and removed from order book
 /// * `limit` - limit of batch
@@ -209,7 +209,7 @@ struct OrderBatch {
 }
 
 /// A limit order.
-//
+///
 /// * `batch_id` - order batch to which order belongs
 /// * `liquidity` - liquidity of order
 #[derive(Copy, Drop, Serde)]
@@ -219,7 +219,7 @@ struct LimitOrder {
 }
 
 /// Information about a partial fill.
-//
+///
 /// * `limit` - limit price
 /// * `amount_in` - amount swapped in from partial fill, inclusive of fees
 /// * `amount_out` - amount swapped out from partial fill
@@ -231,7 +231,7 @@ struct PartialFillInfo {
 }
 
 /// Information about a swap.
-//
+///
 /// * `is_buy` - whether swap is buy or sell
 /// * `amount` - amount swapped in or out
 /// * `exact_input` - whether amount is exact input or exact output
@@ -247,7 +247,7 @@ struct SwapParams {
 }
 
 /// Strategy position info.
-//
+///
 /// * `lower_limit` - lower limit of position
 /// * `upper_limit` - upper limit of position
 /// * `liquidity` - liquidity of position
@@ -259,7 +259,7 @@ struct PositionInfo {
 }
 
 /// Position info returned for ERC721.
-//
+///
 /// * `base_token` - base token address
 /// * `quote_token` - quote token address
 /// * `width` - width of market position is in
@@ -293,7 +293,7 @@ struct ERC721PositionInfo {
 ////////////////////////////////
 
 /// Packed version of `MarketInfo`.
-//
+///
 /// * `base_token` - address of base token
 /// * `quote_token` - address of quote token
 /// * `strategy` - liquidity strategy contract
@@ -311,7 +311,7 @@ struct PackedMarketInfo {
 }
 
 /// Packed version of `MarketState`.
-//
+///
 /// * `curr_sqrt_price` - curr_sqrt_price (constrained to felt252)
 /// * `base_fee_factor` - base_fee_factor (constrained to felt252)
 /// * `quote_fee_factor` - quote_fee_factor (constrained to felt252)
@@ -329,7 +329,7 @@ struct PackedMarketState {
 /// `ValidLimits` - 128 bits
 /// `ConfigOption` - 2 bits for variants
 /// `Config` - 1 bit
-//
+///
 /// * `slab` - 128 bits of `ValidLimits` + 12 bits of `ConfigOption`s + 7 bits of `Config`s
 #[derive(starknet::Store)]
 struct PackedMarketConfigs {
@@ -337,7 +337,7 @@ struct PackedMarketConfigs {
 }
 
 /// Packed version of `LimitInfo`.
-//
+///
 /// * `base_fee_factor` - `base_fee_factor` (constrained to felt252)
 /// * `quote_fee_factor` - `quote_fee_factor` (constrained to felt252)
 /// * `slab0` - `liquidity` + first 124 bits of `liquidity_delta`
@@ -351,7 +351,7 @@ struct PackedLimitInfo {
 }
 
 /// Packed version of `OrderBatch`.
-//
+///
 /// * `slab0` - first 128 bits of `base_amount` + first 124 bits of `quote_amount`
 /// * `slab1` - last 4 bits of `quote_amount` + `filled` + `is_bid` + `limit` + `liquidity`
 #[derive(starknet::Store)]
@@ -361,7 +361,7 @@ struct PackedOrderBatch {
 }
 
 /// Packed version of `Position`.
-//
+///
 /// * `market_id` - market id
 /// * `base_fee_factor_last` - `base_fee_factor_last` (constrained to felt252)
 /// * `quote_fee_factor_last` - `quote_fee_factor_last` (constrained to felt252)
@@ -375,7 +375,7 @@ struct PackedPosition {
 }
 
 /// A limit order.
-//
+///
 /// * `batch_id` - batch id
 /// * `liquidity` - liquidity of order coerced to felt252
 #[derive(starknet::Store)]

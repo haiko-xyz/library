@@ -12,7 +12,7 @@ use haiko_lib::types::i128::{i128, I128Trait};
 use haiko_lib::types::i256::{i256, I256Zeroable};
 
 /// Add signed i128 delta to unsigned u128 amount.
-//
+///
 /// # Arguments
 /// * `amount` - starting amount.
 /// * `liquidity_delta` - Liquidity delta to apply
@@ -25,7 +25,7 @@ fn add_delta(ref amount: u128, delta: i128) {
 }
 
 /// Add signed i128 delta to unsigned u256 amount.
-//
+///
 /// # Arguments
 /// * `amount` - starting amount.
 /// * `liquidity_delta` - Liquidity delta to apply
@@ -57,13 +57,13 @@ fn liquidity_to_quote(
 }
 
 /// Calculate the amount of base tokens received for a given liquidity delta and price range.
-//
+///
 /// # Arguments
 /// * `lower_sqrt_price` - starting sqrt price of the range
 /// * `upper_sqrt_price` - ending sqrt price of the range
 /// * `liquidity_delta` - liquidity delta to apply
 /// * `round_up` - whether to round up or down
-//
+///
 /// # Returns
 /// * `base_amount` - amount of base tokens transferred out (-ve) or in (+ve) from / to pool
 fn liquidity_to_base(
@@ -148,14 +148,14 @@ fn base_to_liquidity(
 }
 
 /// Calculate the amount of tokens received for a given liquidity delta and price range.
-//
+///
 /// # Arguments
 /// * `curr_limit` - current limit of market
 /// * `curr_sqrt_price` - current sqrt price of market
 /// * `liquidity_delta` - liquidity delta to apply
 /// * `lower_limit` - starting limit of the range
 /// * `upper_limit` - ending limit of the range
-//
+///
 /// # Returns
 /// * `base_amount` - amount of base tokens transferred out (-ve) or in (+ve)
 /// * `quote_amount` - amount of quote tokens transferred out (-ve) or in (+ve)
@@ -191,7 +191,7 @@ fn liquidity_to_amounts(
 
 /// Calculate max liquidity per limit.
 /// We scale down max liquidity by ONE to avoid overflows when calculating amounts.
-//
+///
 /// # Arguments
 /// * `market_id` - market id
 fn max_liquidity_per_limit(width: u32) -> u128 {

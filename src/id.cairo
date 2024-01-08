@@ -12,7 +12,7 @@ use haiko_lib::types::core::MarketInfo;
 
 /// Compute market id.
 ///   Poseidon(base_token, quote_token, width, strategy, swap_fee_rate, fee_controller, owner)
-//
+///
 /// # Arguments
 /// * `base_token` - address of the base token
 /// * `quote_token` - address of the quote token
@@ -21,7 +21,7 @@ use haiko_lib::types::core::MarketInfo;
 /// * `swap_fee_rate` - swap fee rate
 /// * `fee_controller` - address of the fee controller contract
 /// * `controller` - market controller (optional)
-//
+///
 /// # Returns
 /// * `salt` - salt for Starknet contract address
 fn market_id(params: MarketInfo) -> felt252 {
@@ -38,13 +38,13 @@ fn market_id(params: MarketInfo) -> felt252 {
 
 /// Compute position id.
 ///   Poseidon(market_id, owner, lower_limit, upper_limit)
-//
+///
 /// # Arguments
 /// * `market_id` - id of market where position is placed
 /// * `owner` - owner of the position
 /// * `lower_limit` - limit ID where position starts
 /// * `upper_limit` - limit ID where position ends
-//
+///
 /// # Returns
 /// * `position_id` - The position ID
 fn position_id(market_id: felt252, owner: felt252, lower_limit: u32, upper_limit: u32,) -> felt252 {
@@ -63,7 +63,7 @@ fn position_id(market_id: felt252, owner: felt252, lower_limit: u32, upper_limit
 /// * `market_id` - id of market where order is placed
 /// * `limit` - limit ID where order is placed
 /// * `nonce` - nonce of the order
-//
+///
 /// # Returns
 /// * `batch_id` - The order ID
 fn batch_id(market_id: felt252, limit: u32, nonce: u128,) -> felt252 {
@@ -80,7 +80,7 @@ fn batch_id(market_id: felt252, limit: u32, nonce: u128,) -> felt252 {
 /// # Arguments
 /// * `batch_id` - id of batch where order is placed
 /// * `owner` - owner of the order
-//
+///
 /// # Returns
 /// * `order_id` - The order ID
 fn order_id(batch_id: felt252, owner: ContractAddress,) -> felt252 {

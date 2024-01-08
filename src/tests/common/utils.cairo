@@ -75,10 +75,10 @@ fn to_e28_u128(x: u128) -> u128 {
 ////////////////////////////////
 
 // Calculates the square root of x.
-//
+///
 // # Arguments
 // * `x` - The number to calculate the square root of.
-//
+///
 // # Returns
 // * `result` - The square root of x.
 fn _sqrt(x: u256) -> u256 {

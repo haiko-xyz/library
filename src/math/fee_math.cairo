@@ -14,11 +14,11 @@ use haiko_lib::types::core::{LimitInfo, MarketState};
 ////////////////////////////////
 
 /// Calculates fee, rounding up.
-//
+///
 /// # Arguments
 /// `amount` - The amount on which the fee is applied
 /// `fee_rate` - The fee rate denominated in basis points
-//
+///
 /// # Returns
 /// * `fee` - The fee amount
 fn calc_fee(amount: u256, fee_rate: u16,) -> u256 {
@@ -27,11 +27,11 @@ fn calc_fee(amount: u256, fee_rate: u16,) -> u256 {
 }
 
 /// Calculate amount net of fees to fee.
-//
+///
 /// # Arguments
 /// * `net_amount` - Amount net of fees
 /// * `fee_rate` - Fee rate denominated in basis points
-//
+///
 /// # Returns
 /// * `fee` - Fee amount
 fn net_to_fee(net_amount: u256, fee_rate: u16,) -> u256 {
@@ -40,11 +40,11 @@ fn net_to_fee(net_amount: u256, fee_rate: u16,) -> u256 {
 }
 
 /// Calculate amount net of fees to gross amount.
-//
+///
 /// # Arguments
 /// * `net_amount` - Amount net of fees
 /// * `fee_rate` - Fee rate denominated in basis points
-//
+///
 /// # Returns
 /// * `fee` - Fee amount
 fn net_to_gross(net_amount: u256, fee_rate: u16,) -> u256 {
@@ -54,11 +54,11 @@ fn net_to_gross(net_amount: u256, fee_rate: u16,) -> u256 {
 
 /// Converts amount net of fees to amount gross of fees.
 /// Rounds down as fees are calculated rounding up.
-//
+///
 /// # Arguments
 /// * `net_amount` - Amount net of fees
 /// * `fee_rate` - Fee rate denominated in basis points
-//
+///
 /// # Returns
 /// * `gross_amount` - Amount gross of fees
 fn gross_to_net(gross_amount: u256, fee_rate: u16) -> u256 {
@@ -68,7 +68,7 @@ fn gross_to_net(gross_amount: u256, fee_rate: u16) -> u256 {
 
 /// Calculates fees accumulated inside a position.
 /// Formula: global fees - fees below lower limit - fees above upper limit
-//
+///
 /// # Arguments
 /// * `lower_limit_info` - lower limit info struct
 /// * `upper_limit_info` - upper limit info struct
@@ -78,7 +78,7 @@ fn gross_to_net(gross_amount: u256, fee_rate: u16) -> u256 {
 /// * `curr_limit` - current limit
 /// * `global_base_fee_factor` - global base fees per unit liquidity
 /// * `global_quote_fee_factor` - global quote fees per unit liquidity
-//
+///
 /// # Returns
 /// * `base_fees` - base fees accrued inside position
 /// * `quote_fees` - quote fees accrued inside position

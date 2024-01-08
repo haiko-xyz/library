@@ -4,19 +4,19 @@ use starknet::class_hash::ClassHash;
 #[starknet::interface]
 trait IQuoter<TContractState> {
     /// Get owner.
-    //
+    ///
     /// # Returns
     /// * `owner` - owner address
     fn owner(self: @TContractState) -> ContractAddress;
 
     /// Get market manager.
-    //
+    ///
     /// # Returns
     /// * `market_manager` - market manager address
     fn market_manager(self: @TContractState) -> ContractAddress;
 
     /// Obtain quote for a swap.
-    //
+    ///
     /// # Arguments
     /// * `market_id` - market ID
     /// * `is_buy` - whether swap is a buy or sell
@@ -34,7 +34,7 @@ trait IQuoter<TContractState> {
     /// reports its queued and placed positions. This function is intended for use by on-chain
     /// callers that cannot retrieve `quote` via error message. Alternatively, it can be used 
     /// to obtain guaranteed correct quotes for non-strategy markets.
-    //
+    ///
     /// # Arguments
     /// * `market_ids` - list of market ids
     /// * `is_buy` - whether swap is a buy or sell
@@ -52,13 +52,13 @@ trait IQuoter<TContractState> {
     ) -> Span<u256>;
 
     /// Obtain quote for a multi-market swap.
-    //
+    ///
     /// # Arguments
     /// * `in_token` - in token address
     /// * `out_token` - out token address
     /// * `amount` - amount of tokens to swap in
     /// * `route` - list of market ids defining the route to swap through
-    //
+    ///
     /// # Returns
     /// * `amount` - quoted amount out
     fn quote_multiple(
@@ -74,14 +74,14 @@ trait IQuoter<TContractState> {
     /// reports its queued and placed positions. This function is intended for use by on-chain
     /// callers that cannot retrieve `quote` via error message. Alternatively, it can be used 
     /// to obtain guaranteed correct quotes for non-strategy markets.
-    //
+    ///
     /// # Arguments
     /// * `in_token` - in token address
     /// * `out_token` - out token address
     /// * `amount` - amount of tokens to swap in
     /// * `routes` - list of routes to swap through
     /// * `route_lens` - length of each swap route
-    //
+    ///
     /// # Returns
     /// * `amounts` - list of quoted amounts
     fn unsafe_quote_multiple_array(
@@ -97,7 +97,7 @@ trait IQuoter<TContractState> {
     /// 
     /// # Arguments
     /// * `position_ids` - list of position ids
-    //
+    ///
     /// # Returns
     /// * `base_amount` - amount of base tokens inside position, exclusive of fees
     /// * `quote_amount` - amount of quote tokens inside position, exclusive of fees
@@ -112,7 +112,7 @@ trait IQuoter<TContractState> {
     /// # Arguments
     /// * `order_ids` - list of position ids
     /// * `market_ids` - list of market ids
-    //
+    ///
     /// # Returns
     /// * `base_amount` - amount of base tokens inside order
     /// * `quote_amount` - amount of quote tokens inside order
@@ -130,7 +130,7 @@ trait IQuoter<TContractState> {
 
     /// Upgrade contract class.
     /// Callable by owner only.
-    //
+    ///
     /// # Arguments
     /// # `new_class_hash` - New class hash of the contract
     fn upgrade(ref self: TContractState, new_class_hash: ClassHash);

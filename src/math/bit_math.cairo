@@ -4,10 +4,10 @@ use traits::{TryInto, DivEq};
 use option::OptionTrait;
 
 /// Returns the index of the most significant bit of a u256 in little endian format.
-//
+///
 /// # Arguments
 /// * `x` - The number to find the most significant bit of.
-//
+///
 /// # Returns
 /// * `i` - Index of the most significant bit.
 fn msb(x: u256) -> u8 {
@@ -50,10 +50,10 @@ fn msb(x: u256) -> u8 {
 }
 
 /// Returns the index of the least significant bit of a u256 in little endian format.
-//
+///
 /// # Arguments
 /// * `x` - The number to find the least significant bit of.
-//
+///
 /// # Returns
 /// * `i` - Index of the least significant bit.
 fn lsb(x: u256) -> u8 {
