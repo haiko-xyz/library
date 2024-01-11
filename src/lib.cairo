@@ -3,6 +3,4 @@ mod id;
 mod interfaces;
 mod math;
 mod types;
-
-#[cfg(test)]
-mod tests;
+mod helpers;

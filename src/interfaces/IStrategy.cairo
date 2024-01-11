@@ -36,7 +36,7 @@ trait IStrategy<TContractState> {
     /// 
     /// # Arguments
     /// * `market_id` - market id
-    //
+    ///
     /// # Returns
     /// * `positions` - list of positions queued to be placed by the strategy on next update
     fn queued_positions(self: @TContractState, market_id: felt252) -> Span<PositionInfo>;
@@ -50,6 +50,6 @@ trait IStrategy<TContractState> {
     /// 
     /// # Arguments
     /// * `market_id` - market id
-    // * `params` - information about the incoming swap
+    /// * `params` - information about the incoming swap
     fn update_positions(ref self: TContractState, market_id: felt252, params: SwapParams);
 }
