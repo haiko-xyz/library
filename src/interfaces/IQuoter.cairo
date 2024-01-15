@@ -125,6 +125,27 @@ trait IQuoter<TContractState> {
         self: @TContractState, user: ContractAddress, tokens: Span<ContractAddress>
     ) -> Span<(u256, u8)>;
 
+    /// Fetch approval amounts for creating a new market.
+    /// 
+    /// # Arguments
+    /// * `width` - market width
+    /// * `start_limit` - start limit at which market is initialised
+    /// * `lower_limit` - lower limit of posiiton
+    /// * `upper_limit` - upper limit of position
+    /// * `liquidity_delta` - liquidity delta
+    ///
+    /// # Returns
+    /// * `base_amount` - amount of base tokens to approve
+    /// * `quote_amount` - amount of quote tokens to approve
+    fn new_market_position_approval_amounts(
+        self: @TContractState,
+        width: u32,
+        start_limit: u32,
+        lower_limit: u32,
+        upper_limit: u32,
+        liquidity_delta: u128,
+    ) -> (u256, u256);
+
     /// Set market manager.
     fn set_market_manager(ref self: TContractState, market_manager: ContractAddress);
 
