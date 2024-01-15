@@ -4,9 +4,13 @@ mod liquidity_math;
 mod math;
 mod price_math;
 
-#[cfg(tests)]
+#[cfg(test)]
 mod test_bit_math;
+#[cfg(test)]
 mod test_fee_math;
+#[cfg(test)]
 mod test_liquidity_math;
+#[cfg(test)]
 mod test_math;
+#[cfg(test)]
 mod test_price_math;
