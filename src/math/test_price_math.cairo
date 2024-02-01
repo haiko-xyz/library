@@ -6,9 +6,7 @@ use haiko_lib::math::price_math::{
     shift_limit, unshift_limit, limit_to_sqrt_price, sqrt_price_to_limit, price_to_limit, max_limit,
     offset
 };
-use haiko_lib::constants::{
-    OFFSET, MAX_LIMIT, MIN_LIMIT, MIN_SQRT_PRICE, MAX_SQRT_PRICE, MAX_WIDTH
-};
+use haiko_lib::constants::{OFFSET, MAX_LIMIT, MIN_LIMIT, MIN_SQRT_PRICE, MAX_SQRT_PRICE, MAX_WIDTH};
 use haiko_lib::types::i32::{i32, I32Trait};
 use haiko_lib::helpers::utils::{approx_eq, approx_eq_pct};
 

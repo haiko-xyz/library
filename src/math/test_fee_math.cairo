@@ -2,12 +2,11 @@
 use integer::BoundedU256;
 
 // Local imports.
-use haiko_lib::math::fee_math::{
-    calc_fee, gross_to_net, net_to_gross, net_to_fee, get_fee_inside
-};
+use haiko_lib::math::fee_math::{calc_fee, gross_to_net, net_to_gross, net_to_fee, get_fee_inside};
 use haiko_lib::helpers::utils::approx_eq;
 use haiko_lib::types::core::{LimitInfo, Position};
 use haiko_lib::types::i128::I128Zeroable;
+use haiko_lib::types::i256::I256Trait;
 
 ////////////////////////////////
 // TESTS - calc_fee
@@ -210,19 +209,22 @@ fn test_get_fee_inside_cases() {
     let (_, _, mut base_factor, mut quote_factor) = get_fee_inside(
         empty_position(), lower_limit_info, upper_limit_info, 0, 10, 15, 100, 200
     );
-    assert(base_factor == 0 && quote_factor == 0, 'gfi(0,10,15,100,200)');
+    assert(
+        base_factor == I256Trait::new(0, false) && quote_factor == I256Trait::new(0, false),
+        'gfi(0,10,15,100,200)'
+    );
 
     // Position is above current price
     let (_, _, base_factor, quote_factor) = get_fee_inside(
         empty_position(), lower_limit_info, upper_limit_info, 5, 10, 0, 100, 200
     );
-    assert(base_factor == 0 && quote_factor == 0, 'gfi(5,10,0,100,200)');
+    assert(base_factor.val == 0 && quote_factor.val == 0, 'gfi(5,10,0,100,200)');
 
     // Position wraps current price, no fees accrued outside
     let (_, _, base_factor, quote_factor) = get_fee_inside(
         empty_position(), lower_limit_info, upper_limit_info, 0, 10, 5, 100, 200
     );
-    assert(base_factor == 100 && quote_factor == 200, 'gfi(0,10,5,100,200)');
+    assert(base_factor.val == 100 && quote_factor.val == 200, 'gfi(0,10,5,100,200)');
 
     // Position wraps current price, fees accrued above
     upper_limit_info.base_fee_factor = 25;
@@ -230,7 +232,7 @@ fn test_get_fee_inside_cases() {
     let (_, _, base_factor, quote_factor) = get_fee_inside(
         empty_position(), lower_limit_info, upper_limit_info, 0, 10, 5, 100, 200
     );
-    assert(base_factor == 75 && quote_factor == 150, 'gfi(0,10,5,100-25,200-50)');
+    assert(base_factor.val == 75 && quote_factor.val == 150, 'gfi(0,10,5,100-25,200-50)');
 
     // Position wraps current price, fees accrued below
     upper_limit_info.base_fee_factor = 0;
@@ -240,7 +242,7 @@ fn test_get_fee_inside_cases() {
     let (_, _, base_factor, quote_factor) = get_fee_inside(
         empty_position(), lower_limit_info, upper_limit_info, 0, 10, 5, 100, 200
     );
-    assert(base_factor == 88 && quote_factor == 176, 'gfi(0,10,5,100-12,200-24)');
+    assert(base_factor.val == 88 && quote_factor.val == 176, 'gfi(0,10,5,100-12,200-24)');
 
     // Position wraps current price, fees accrued above and below
     upper_limit_info.base_fee_factor = 25;
@@ -248,7 +250,7 @@ fn test_get_fee_inside_cases() {
     let (_, _, base_factor, quote_factor) = get_fee_inside(
         empty_position(), lower_limit_info, upper_limit_info, 0, 10, 5, 100, 200
     );
-    assert(base_factor == 63 && quote_factor == 126, 'gfi(0,10,5,100-12-25,200-24-50)');
+    assert(base_factor.val == 63 && quote_factor.val == 126, 'gfi(0,10,5,100-12-25,200-24-50)');
 }
 
 ////////////////////////////////
@@ -271,7 +273,7 @@ fn empty_position() -> Position {
         lower_limit: 0,
         upper_limit: 0,
         liquidity: 0,
-        base_fee_factor_last: 0,
-        quote_fee_factor_last: 0,
+        base_fee_factor_last: I256Trait::new(0, false),
+        quote_fee_factor_last: I256Trait::new(0, false),
     }
 }

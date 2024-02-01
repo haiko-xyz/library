@@ -148,11 +148,4 @@ trait IQuoter<TContractState> {
 
     /// Set market manager.
     fn set_market_manager(ref self: TContractState, market_manager: ContractAddress);
-
-    /// Upgrade contract class.
-    /// Callable by owner only.
-    ///
-    /// # Arguments
-    /// # `new_class_hash` - New class hash of the contract
-    fn upgrade(ref self: TContractState, new_class_hash: ClassHash);
 }

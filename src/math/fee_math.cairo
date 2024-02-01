@@ -1,89 +1,90 @@
-/// Core lib imports.
+// Core lib imports.
 use traits::Into;
 use haiko_lib::types::core::Position;
-use haiko_lib::types::i256::I256Trait;
+use haiko_lib::types::i256::{i256, I256Trait};
 use haiko_lib::constants::ONE;
+use cmp::max;
 
-/// Local imports.
+// Local imports.
 use haiko_lib::math::math;
 use haiko_lib::constants::MAX_FEE_RATE;
 use haiko_lib::types::core::{LimitInfo, MarketState};
 
 ////////////////////////////////
-/// FUNCTIONS
+// FUNCTIONS
 ////////////////////////////////
 
-/// Calculates fee, rounding up.
-///
-/// # Arguments
-/// `amount` - The amount on which the fee is applied
-/// `fee_rate` - The fee rate denominated in basis points
-///
-/// # Returns
-/// * `fee` - The fee amount
+// Calculates fee, rounding up.
+//
+// # Arguments
+// `amount` - The amount on which the fee is applied
+// `fee_rate` - The fee rate denominated in basis points
+//
+// # Returns
+// * `fee` - The fee amount
 fn calc_fee(amount: u256, fee_rate: u16,) -> u256 {
     assert(fee_rate <= MAX_FEE_RATE, 'FeeRateOF');
     math::mul_div(amount, fee_rate.into(), MAX_FEE_RATE.into(), true)
 }
 
-/// Calculate amount net of fees to fee.
-///
-/// # Arguments
-/// * `net_amount` - Amount net of fees
-/// * `fee_rate` - Fee rate denominated in basis points
-///
-/// # Returns
-/// * `fee` - Fee amount
+// Calculate amount net of fees to fee.
+//
+// # Arguments
+// * `net_amount` - Amount net of fees
+// * `fee_rate` - Fee rate denominated in basis points
+//
+// # Returns
+// * `fee` - Fee amount
 fn net_to_fee(net_amount: u256, fee_rate: u16,) -> u256 {
     assert(fee_rate <= MAX_FEE_RATE, 'FeeRateOF');
     math::mul_div(net_amount, fee_rate.into(), MAX_FEE_RATE.into() - fee_rate.into(), false)
 }
 
-/// Calculate amount net of fees to gross amount.
-///
-/// # Arguments
-/// * `net_amount` - Amount net of fees
-/// * `fee_rate` - Fee rate denominated in basis points
-///
-/// # Returns
-/// * `fee` - Fee amount
+// Calculate amount net of fees to gross amount.
+//
+// # Arguments
+// * `net_amount` - Amount net of fees
+// * `fee_rate` - Fee rate denominated in basis points
+//
+// # Returns
+// * `fee` - Fee amount
 fn net_to_gross(net_amount: u256, fee_rate: u16,) -> u256 {
     assert(fee_rate <= MAX_FEE_RATE, 'FeeRateOF');
     math::mul_div(net_amount, MAX_FEE_RATE.into(), MAX_FEE_RATE.into() - fee_rate.into(), false)
 }
 
-/// Converts amount net of fees to amount gross of fees.
-/// Rounds down as fees are calculated rounding up.
-///
-/// # Arguments
-/// * `net_amount` - Amount net of fees
-/// * `fee_rate` - Fee rate denominated in basis points
-///
-/// # Returns
-/// * `gross_amount` - Amount gross of fees
+// Converts amount net of fees to amount gross of fees.
+// Rounds down as fees are calculated rounding up.
+//
+// # Arguments
+// * `net_amount` - Amount net of fees
+// * `fee_rate` - Fee rate denominated in basis points
+//
+// # Returns
+// * `gross_amount` - Amount gross of fees
 fn gross_to_net(gross_amount: u256, fee_rate: u16) -> u256 {
     assert(fee_rate <= MAX_FEE_RATE, 'FeeRateOF');
     math::mul_div(gross_amount, (MAX_FEE_RATE - fee_rate).into(), MAX_FEE_RATE.into(), false)
 }
 
-/// Calculates fees accumulated inside a position.
-/// Formula: global fees - fees below lower limit - fees above upper limit
-///
-/// # Arguments
-/// * `lower_limit_info` - lower limit info struct
-/// * `upper_limit_info` - upper limit info struct
-/// * `lower_limit` - lower limit
-/// * `upper_limit` - upper limit
-/// * `position` - liquidity position
-/// * `curr_limit` - current limit
-/// * `global_base_fee_factor` - global base fees per unit liquidity
-/// * `global_quote_fee_factor` - global quote fees per unit liquidity
-///
-/// # Returns
-/// * `base_fees` - base fees accrued inside position
-/// * `quote_fees` - quote fees accrued inside position
-/// * `base_fee_factor` - new position base fee factor after update
-/// * `quote_fee_factor` - new position quote fee factor after update
+// Calculates fees accumulated inside a position.
+// Formula: global fees - fees below lower limit - fees above upper limit
+//
+// # Arguments
+// * `lower_limit_info` - lower limit info struct
+// * `upper_limit_info` - upper limit info struct
+// * `lower_limit` - lower limit
+// * `upper_limit` - upper limit
+// * `position` - liquidity position
+// * `curr_limit` - current limit
+// * `global_base_fee_factor` - global base fees per unit liquidity
+// * `global_quote_fee_factor` - global quote fees per unit liquidity
+//
+// # Returns
+// * `base_fees` - base fees accrued inside position
+// * `quote_fees` - quote fees accrued inside position
+// * `base_fee_factor` - new position base fee factor after update
+// * `quote_fee_factor` - new position quote fee factor after update
 fn get_fee_inside(
     position: Position,
     lower_limit_info: LimitInfo,
@@ -93,9 +94,9 @@ fn get_fee_inside(
     curr_limit: u32,
     base_fee_factor: u256,
     quote_fee_factor: u256,
-) -> (u256, u256, u256, u256) {
-    /// Note: includes various asserts for u256_overflow debugging purposes - can likely remove later.
-    /// Calculate fees accrued below current limit.
+) -> (u256, u256, i256, i256) {
+    // Note: includes various asserts for u256_overflow debugging purposes - can likely remove later.
+    // Calculate fees accrued below current limit.
     let base_fees_below = if curr_limit >= lower_limit {
         lower_limit_info.base_fee_factor
     } else {
@@ -109,7 +110,7 @@ fn get_fee_inside(
         quote_fee_factor - lower_limit_info.quote_fee_factor
     };
 
-    /// Calculate fees accrued above current limit.
+    // Calculate fees accrued above current limit.
     let base_fees_above = if curr_limit < upper_limit {
         upper_limit_info.base_fee_factor
     } else {
@@ -119,24 +120,29 @@ fn get_fee_inside(
     let quote_fees_above = if curr_limit < upper_limit {
         upper_limit_info.quote_fee_factor
     } else {
-        assert(base_fee_factor >= upper_limit_info.base_fee_factor, 'GetFeeInsideQuoteAbove');
+        assert(quote_fee_factor >= upper_limit_info.quote_fee_factor, 'GetFeeInsideQuoteAbove');
         quote_fee_factor - upper_limit_info.quote_fee_factor
     };
 
-    /// Calculate fee factors inside position.
-    assert(base_fee_factor >= base_fees_below + base_fees_above, 'GetFeeInsideBaseInside');
-    assert(quote_fee_factor >= quote_fees_below + quote_fees_above, 'GetFeeInsideQuoteInside');
-    let base_fee_factor_inside = base_fee_factor - base_fees_below - base_fees_above;
-    let quote_fee_factor_inside = quote_fee_factor - quote_fees_below - quote_fees_above;
+    // Calculate fee factors inside position. Fee factor inside is signed as it can be negative.
+    let base_fee_factor_inside = I256Trait::new(base_fee_factor, false)
+        - I256Trait::new(base_fees_below, false)
+        - I256Trait::new(base_fees_above, false);
+    let quote_fee_factor_inside = I256Trait::new(quote_fee_factor, false)
+        - I256Trait::new(quote_fees_below, false)
+        - I256Trait::new(quote_fees_above, false);
 
-    /// Calculate accrued fees.
-    let base_diff = I256Trait::new(base_fee_factor_inside, false)
-        - I256Trait::new(position.base_fee_factor_last, false);
-    let quote_diff = I256Trait::new(quote_fee_factor_inside, false)
-        - I256Trait::new(position.quote_fee_factor_last, false);
-    let base_fees = math::mul_div(base_diff.val, position.liquidity.into(), ONE, false);
-    let quote_fees = math::mul_div(quote_diff.val, position.liquidity.into(), ONE, false);
+    // Calculate accrued fees.
+    let base_diff = base_fee_factor_inside - position.base_fee_factor_last;
+    let quote_diff = quote_fee_factor_inside - position.quote_fee_factor_last;
+    // Floor the difference as accrued fees cannot be negative. This happens when the position limits
+    // had prior accrued fee balances that have now been collected, and the limits are being 
+    // reinitialised on a new deposit.
+    let floored_base_div = max(base_diff, I256Trait::new(0, false));
+    let floored_quote_div = max(quote_diff, I256Trait::new(0, false));
+    let base_fees = math::mul_div(floored_base_div.val, position.liquidity.into(), ONE, false);
+    let quote_fees = math::mul_div(floored_quote_div.val, position.liquidity.into(), ONE, false);
 
-    /// Return accrued fes and fee factors.
+    // Return accrued fes and fee factors.
     (base_fees, quote_fees, base_fee_factor_inside, quote_fee_factor_inside)
 }
