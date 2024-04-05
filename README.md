@@ -14,5 +14,5 @@ scarb build
 
 ## Version control
 
-- [Scarb](https://github.com/software-mansion/scarb) 2.3.1
-- [Cairo](https://github.com/starkware-libs/cairo) 2.3.1
+- [Scarb](https://github.com/software-mansion/scarb) 2.5.4
+- [Cairo](https://github.com/starkware-libs/cairo) 2.5.4

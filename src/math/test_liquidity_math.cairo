@@ -1,5 +1,4 @@
-use integer::BoundedU128;
-use debug::PrintTrait;
+use core::integer::BoundedInt;
 
 use haiko_lib::math::price_math::limit_to_sqrt_price;
 use haiko_lib::math::liquidity_math::{
@@ -30,7 +29,6 @@ struct TestCase {
 ////////////////////////////////
 
 #[test]
-#[available_gas(2000000000)]
 fn test_add_delta_cases() {
     let mut liquidity = 0;
     let mut delta = I128Trait::new(0, false);
@@ -57,7 +55,7 @@ fn test_add_delta_cases() {
     add_delta(ref liquidity, delta);
     assert(liquidity == 0, '10 + -10');
 
-    let max = BoundedU128::max();
+    let max = BoundedInt::max();
     liquidity = max - 5;
     delta = I128Trait::new(5, false);
     add_delta(ref liquidity, delta);
@@ -66,7 +64,6 @@ fn test_add_delta_cases() {
 
 #[test]
 #[should_panic(expected: ('u128_sub Overflow',))]
-#[available_gas(2000000000)]
 fn test_add_delta_underflow() {
     let mut liquidity = 0;
     let delta = I128Trait::new(1, true);
@@ -78,7 +75,6 @@ fn test_add_delta_underflow() {
 /////////////////////////////////////
 
 fn test_cases_set1() -> Span<TestCase> {
-    let one: u128 = 10000000000000000000000000000;
     let cases: Span<TestCase> = array![
         TestCase {
             lower_sqrt_price: encode_sqrt_price(1, 1),
@@ -161,14 +157,12 @@ fn test_cases_set2() -> Span<TestCase> {
 /////////////////////////////////////
 
 #[test]
-#[available_gas(2000000000)]
 fn test_liquidity_to_quote_cases_set1() {
     let cases = test_cases_set1();
     test_liquidity_to_quote_cases(cases);
 }
 
 #[test]
-#[available_gas(2000000000)]
 fn test_liquidity_to_quote_cases_set2() {
     let cases = test_cases_set2();
     test_liquidity_to_quote_cases(cases);
@@ -198,14 +192,12 @@ fn test_liquidity_to_quote_cases(cases: Span<TestCase>) {
 /////////////////////////////////////
 
 #[test]
-#[available_gas(2000000000)]
 fn test_liquidity_to_base_cases_set1() {
     let cases = test_cases_set1();
     test_liquidity_to_base_cases(cases);
 }
 
 #[test]
-#[available_gas(2000000000)]
 fn test_liquidity_to_base_cases_set2() {
     let cases = test_cases_set2();
     test_liquidity_to_base_cases(cases);
@@ -232,7 +224,6 @@ fn test_liquidity_to_base_cases(cases: Span<TestCase>) {
 
 #[test]
 #[should_panic(expected: ('MulDivByZero',))]
-#[available_gas(2000000000)]
 fn test_base_amount_delta_start_price_0() {
     let start = 0;
     let end = encode_sqrt_price(2, 1);
@@ -245,14 +236,12 @@ fn test_base_amount_delta_start_price_0() {
 /////////////////////////////////////
 
 #[test]
-#[available_gas(2000000000)]
 fn test_quote_to_liquidity_set1() {
     let cases = test_cases_set1();
     test_quote_to_liquidity_cases(cases);
 }
 
 #[test]
-#[available_gas(2000000000)]
 fn test_quote_to_liquidity_cases_set2() {
     let cases = test_cases_set2();
     test_quote_to_liquidity_cases(cases);
@@ -282,14 +271,12 @@ fn test_quote_to_liquidity_cases(cases: Span<TestCase>) {
 /////////////////////////////////////
 
 #[test]
-#[available_gas(2000000000)]
 fn test_base_to_liquidity_set1() {
     let cases = test_cases_set1();
     test_base_to_liquidity_cases(cases);
 }
 
 #[test]
-#[available_gas(2000000000)]
 fn test_base_to_liquidity_cases_set2() {
     let cases = test_cases_set2();
     test_base_to_liquidity_cases(cases);
@@ -319,7 +306,6 @@ fn test_base_to_liquidity_cases(cases: Span<TestCase>) {
 /////////////////////////////////////
 
 #[test]
-#[available_gas(2000000000)]
 fn test_liquidity_to_amounts() {
     // Case 1: Position range is above curr price.
     let curr_limit = OFFSET + 80000;
@@ -354,7 +340,6 @@ fn test_liquidity_to_amounts() {
 }
 
 #[test]
-#[available_gas(2000000000)]
 fn test_max_liquidity_per_limit() {
     assert(max_liquidity_per_limit(1) == 21518811465203357833463505223041, 'max_liq(1)');
 
@@ -362,5 +347,5 @@ fn test_max_liquidity_per_limit() {
 
     assert(max_liquidity_per_limit(250) == 5379618157285522867539991264295826, 'max_liq(250)');
 
-    assert(max_liquidity_per_limit(MAX_NUM_LIMITS) == BoundedU128::max(), 'max_liq(MAX)');
+    assert(max_liquidity_per_limit(MAX_NUM_LIMITS) == BoundedInt::max(), 'max_liq(MAX)');
 }

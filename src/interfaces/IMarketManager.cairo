@@ -2,14 +2,13 @@ use starknet::ContractAddress;
 use starknet::class_hash::ClassHash;
 
 use haiko_lib::types::core::{
-    MarketInfo, MarketState, MarketConfigs, OrderBatch, Position, LimitInfo, LimitOrder,
-    ERC721PositionInfo, Depth
+    MarketInfo, MarketState, MarketConfigs, OrderBatch, Position, LimitInfo, LimitOrder, Depth
 };
 use haiko_lib::types::i128::i128;
 use haiko_lib::types::i256::i256;
 
 #[starknet::interface]
-trait IMarketManager<TContractState> {
+pub trait IMarketManager<TContractState> {
     ////////////////////////////////
     // VIEW
     ////////////////////////////////
@@ -109,7 +108,10 @@ trait IMarketManager<TContractState> {
     // Returns total amount of tokens and accrued fees inside of a liquidity position.
     // 
     // # Arguments
-    // * `position_id` - position id
+    // * `market_id` - market id
+    // * `owner` - owner of position
+    // * `lower_limit` - lower limit of position
+    // * `upper_limit` - upper limit of position
     //
     // # Returns
     // * `base_amount` - amount of base tokens inside position, exclusive of fees
@@ -117,7 +119,11 @@ trait IMarketManager<TContractState> {
     // * `base_fees` - base fees accumulated inside position
     // * `quote_fees` - quote fees accumulated inside position
     fn amounts_inside_position(
-        self: @TContractState, position_id: felt252,
+        self: @TContractState,
+        market_id: felt252,
+        owner: felt252,
+        lower_limit: u32,
+        upper_limit: u32
     ) -> (u256, u256, u256, u256);
 
     // Returns total amount of tokens inside of a limit order.
@@ -155,9 +161,6 @@ trait IMarketManager<TContractState> {
     // # Returns
     // * `depth` - list of price limits and liquidity deltas
     fn depth(self: @TContractState, market_id: felt252) -> Span<Depth>;
-
-    // Returns information about ERC721 position.
-    fn ERC721_position_info(self: @TContractState, token_id: felt252) -> ERC721PositionInfo;
 
     ////////////////////////////////
     // EXTERNAL
@@ -414,8 +417,15 @@ trait IMarketManager<TContractState> {
     // Mint ERC721 to represent an open liquidity position.
     //
     // # Arguments
-    // * `position_id` - id of position mint
-    fn mint(ref self: TContractState, position_id: felt252);
+    // * `market_id` - market id of position
+    // * `lower_limit` - lower limit of position
+    // * `upper_limit` - upper limit of position
+    //
+    // # Returns
+    // * `position_id` - id of minted position
+    fn mint(
+        ref self: TContractState, market_id: felt252, lower_limit: u32, upper_limit: u32
+    ) -> felt252;
 
     // Burn ERC721 to unlock capital from open liquidity positions.
     //
@@ -477,4 +487,11 @@ trait IMarketManager<TContractState> {
     // * `market_id` - market id'
     // * `new_configs` - new market configs
     fn set_market_configs(ref self: TContractState, market_id: felt252, new_configs: MarketConfigs);
+
+    // Upgrade contract class.
+    // Callable by owner only.
+    //
+    // # Arguments
+    // * `new_class_hash` - new class hash of contract
+    fn upgrade(ref self: TContractState, new_class_hash: ClassHash);
 }

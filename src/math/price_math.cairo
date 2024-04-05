@@ -1,13 +1,10 @@
-/// Core lib imports.
-use traits::{Into, TryInto};
-use option::OptionTrait;
-use integer::U32IntoFelt252;
-use integer::BoundedU256;
+// Core lib imports.
+use core::integer::BoundedInt;
 
-/// Local imports.
+// Local imports.
 use haiko_lib::math::math;
 use haiko_lib::math::bit_math;
-use haiko_lib::types::i32::{i32, I32Trait, I32Zeroable};
+use haiko_lib::types::i32::{i32, I32Trait};
 use haiko_lib::types::i128::{i128, I128Trait};
 use haiko_lib::constants::{
     ONE, ONE_SQUARED, HALF, MAX_LIMIT, MIN_LIMIT, OFFSET, MAX_LIMIT_SHIFTED, Q128, MIN_SQRT_PRICE,
@@ -15,101 +12,101 @@ use haiko_lib::constants::{
 };
 
 ////////////////////////////////
-/// FUNCTIONS
+// FUNCTIONS
 ////////////////////////////////
 
-/// Convert limit from i32 (range -7,906,625 to 7,906,625) to u32 (range 0 to 15,813,251).
-///
-/// # Arguments
-/// * `limit` - unshifted limit
-/// * `width` - limit width
-///
-/// # Returns
-/// * `shifted_limit` - shifted limit
-fn shift_limit(limit: i32, width: u32) -> u32 {
+// Convert limit from i32 (range -7,906,625 to 7,906,625) to u32 (range 0 to 15,813,251).
+//
+// # Arguments
+// * `limit` - unshifted limit
+// * `width` - limit width
+//
+// # Returns
+// * `shifted_limit` - shifted limit
+pub fn shift_limit(limit: i32, width: u32) -> u32 {
     assert(limit >= I32Trait::new(MIN_LIMIT, true), 'ShiftLimitUnderflow');
     assert(limit <= I32Trait::new(MAX_LIMIT, false), 'ShiftLimitOF');
     let shifted: i32 = limit + I32Trait::new(offset(width), false);
     shifted.val
 }
 
-/// Convert limit from u32 (range 0 to 15,813,251) to i32 (range -7,906,625 to 7,906,625).
-///
-/// # Arguments
-/// * `limit` - shifted limit
-/// * `width` - limit width
-///
-/// # Returns
-/// * `unshifted_limit` - unshifted limit
-fn unshift_limit(limit: u32, width: u32) -> i32 {
+// Convert limit from u32 (range 0 to 15,813,251) to i32 (range -7,906,625 to 7,906,625).
+//
+// # Arguments
+// * `limit` - shifted limit
+// * `width` - limit width
+//
+// # Returns
+// * `unshifted_limit` - unshifted limit
+pub fn unshift_limit(limit: u32, width: u32) -> i32 {
     let unshifted: i32 = I32Trait::new(limit, false) - I32Trait::new(offset(width), false);
     assert(unshifted.val <= MAX_LIMIT / width * width, 'UnshiftLimitOF');
     unshifted
 }
 
-/// Calculate offset used to shift limit.
-///
-/// # Arguments
-/// * `width` - limit width
-///
-/// # Returns
-/// * `offset` - offset to shift limit by
-fn offset(width: u32) -> u32 {
+// Calculate offset used to shift limit.
+//
+// # Arguments
+// * `width` - limit width
+//
+// # Returns
+// * `offset` - offset to shift limit by
+pub fn offset(width: u32) -> u32 {
     OFFSET / width * width
 }
 
-/// Returns the maximum shifted limit given a price width.
-/// Note a corresponding `min_limit` function does not exist because it is always 0.
-///
-/// # Arguments
-/// * `width` - limit width of market
-///
-/// # Returns
-/// * `max_limit` - offset to shift limit by
-fn max_limit(width: u32) -> u32 {
+// Returns the maximum shifted limit given a price width.
+// Note a corresponding `min_limit` function does not exist because it is always 0.
+//
+// # Arguments
+// * `width` - limit width of market
+//
+// # Returns
+// * `max_limit` - offset to shift limit by
+pub fn max_limit(width: u32) -> u32 {
     offset(width) + MAX_LIMIT / width * width
 }
 
-/// Convert limit to sqrt price.
-///   Formula: price = 1.00001 ^ (limit / 2)
-///
-/// # Arguments
-/// * `limit` - shifted limit
-/// * `width` - limit width
-///
-/// # Returns
-/// * `sqrt_price` - sqrt price encoded as UD47x28
-fn limit_to_sqrt_price(limit: u32, width: u32) -> u256 {
-    /// Check limit ID is in range
+// Convert limit to sqrt price.
+//   Formula: price = 1.00001 ^ (limit / 2)
+//
+// # Arguments
+// * `limit` - shifted limit
+// * `width` - limit width
+//
+// # Returns
+// * `sqrt_price` - sqrt price encoded as UD47x28
+pub fn limit_to_sqrt_price(limit: u32, width: u32) -> u256 {
+    // Check limit ID is in range
     assert(width <= MAX_WIDTH, 'WidthOF');
     assert(limit <= max_limit(width), 'LimitOF');
 
-    /// Unshift limit
+    // Unshift limit
     let unshifted = unshift_limit(limit, width);
 
-    /// Calculate sqrt price
+    // Calculate sqrt price
     _exp1_00001(unshifted)
 }
 
-/// Convert sqrt price to limit.
-/// Returns the highest limit such that the corresponding sqrt price is less than or equal to the 
-/// input sqrt price.
-/// 
-/// # Arguments
-/// * `sqrt_price` - sqrt price encoded as UD47x28
-/// * `width` - limit width
-///
-/// # Returns
-/// * `limit` - shifted limit
-fn sqrt_price_to_limit(sqrt_price: u256, width: u32) -> u32 {
+// Convert sqrt price to limit.
+// Returns the highest limit such that the corresponding sqrt price is less than or equal to the 
+// input sqrt price.
+// 
+// # Arguments
+// * `sqrt_price` - sqrt price encoded as UD47x28
+// * `width` - limit width
+//
+// # Returns
+// * `limit` - shifted limit
+pub fn sqrt_price_to_limit(sqrt_price: u256, width: u32) -> u32 {
     assert(sqrt_price >= MIN_SQRT_PRICE && sqrt_price <= MAX_SQRT_PRICE, 'SqrtPriceOF');
 
-    /// Handle special case
+    // Handle special case
     if sqrt_price == MAX_SQRT_PRICE {
         return MAX_LIMIT_SHIFTED;
     }
 
-    /// If sqrt price is less than 1, calculate reciprocal and flip sign.
+    // If sqrt price is less than 1, calculate reciprocal and flip sign.
     let sign: bool = sqrt_price < ONE;
     let rebased = if sign {
         ONE_SQUARED / sqrt_price
@@ -121,7 +118,7 @@ fn sqrt_price_to_limit(sqrt_price: u256, width: u32) -> u32 {
 
     let limit = math::mul_div(log2, 2 * ONE, LOG2_1_00001, sign);
 
-    /// We need to round up for negative sqrt prices
+    // We need to round up for negative sqrt prices
     let remainder: u256 = limit % ONE;
     let unsigned_limit: u256 = limit / ONE + if (remainder != 0 && sign) {
         1
@@ -133,16 +130,16 @@ fn sqrt_price_to_limit(sqrt_price: u256, width: u32) -> u32 {
     shift_limit(signed_limit, width)
 }
 
-/// Convert price to limit.
-/// 
-/// # Arguments
-/// * `price` - price encoded as UD47x28
-/// * `width` - limit width
-/// * `round_up` - round up if true, round down if false
-///
-/// # Returns
-/// * `limit` - shifted limit
-fn price_to_limit(price: u256, width: u32, round_up: bool) -> u32 {
+// Convert price to limit.
+// 
+// # Arguments
+// * `price` - price encoded as UD47x28
+// * `width` - limit width
+// * `round_up` - round up if true, round down if false
+//
+// # Returns
+// * `limit` - shifted limit
+pub fn price_to_limit(price: u256, width: u32, round_up: bool) -> u32 {
     let sign: bool = price < ONE;
     let rebased = if sign {
         ONE_SQUARED / price
@@ -154,7 +151,7 @@ fn price_to_limit(price: u256, width: u32, round_up: bool) -> u32 {
 
     let limit = math::mul_div(log2, ONE, LOG2_1_00001, false);
 
-    /// Rounding up for negative prices is equivalent to rounding down for positive prices
+    // Rounding up for negative prices is equivalent to rounding down for positive prices
     let remainder: u256 = limit % ONE;
     let unsigned_limit: u256 = limit / ONE
         + if (remainder != 0 && (!sign && round_up) || (sign && !round_up)) {
@@ -168,33 +165,33 @@ fn price_to_limit(price: u256, width: u32, round_up: bool) -> u32 {
 }
 
 ////////////////////////////////
-/// INTERNAL HELPERS
+// INTERNAL HELPERS
 ////////////////////////////////
 
-/// Helper function to calculate the binary logarithm.
-fn _log2(x: u256) -> u256 {
-    /// Calculate the integer part of the logarithm.
+// Helper function to calculate the binary logarithm.
+pub fn _log2(x: u256) -> u256 {
+    // Calculate the integer part of the logarithm.
     let n: u256 = bit_math::msb(x / ONE).into();
 
-    /// This is the integer part of the logarithm.
+    // This is the integer part of the logarithm.
     let result_uint: u256 = n * ONE;
 
-    /// Calculate y = x / 2^n.
+    // Calculate y = x / 2^n.
     let y = x / math::pow(2, n);
 
-    /// If y is the unit number, the fractional part is zero.
+    // If y is the unit number, the fractional part is zero.
     if y == ONE {
         result_uint
     } else {
-        /// Calculate the fractional part via the iterative approximation.
+        // Calculate the fractional part via the iterative approximation.
         let delta = HALF;
         let final_result_uint = _log2_helper(y, result_uint, delta);
         final_result_uint
     }
 }
 
-/// Helper function to recursively calculate the logarithm.
-fn _log2_helper(y: u256, result_uint: u256, delta: u256,) -> u256 {
+// Helper function to recursively calculate the logarithm.
+pub fn _log2_helper(y: u256, result_uint: u256, delta: u256,) -> u256 {
     if delta <= 0 {
         result_uint
     } else {
@@ -208,14 +205,14 @@ fn _log2_helper(y: u256, result_uint: u256, delta: u256,) -> u256 {
     }
 }
 
-/// Helper function to calculate the exponent 1.00001 ^ x.
-///
-/// # Arguments
-/// * `x` - Exponent
-///
-/// # Returns
-/// * `result` - Result of exponentiation
-fn _exp1_00001(x: i32) -> u256 {
+// Helper function to calculate the exponent 1.00001 ^ x.
+//
+// # Arguments
+// * `x` - Exponent
+//
+// # Returns
+// * `result` - Result of exponentiation
+pub fn _exp1_00001(x: i32) -> u256 {
     let mut result: u256 = if x.val & 0x1 != 0 {
         0xffffac1d5317ab9e72ee0f7589b88f87
     } else {
@@ -295,11 +292,11 @@ fn _exp1_00001(x: i32) -> u256 {
         result = math::mul_div(result, 0x7e, Q128, false);
     }
 
-    /// Take reciprocal if exponent is negative
+    // Take reciprocal if exponent is negative
     if !x.sign && x.val != 0 {
-        result = BoundedU256::max() / result;
+        result = BoundedInt::max() / result;
     }
 
-    /// Convert to UD47x28
+    // Convert to UD47x28
     math::mul_div(result, ONE, math::pow(2, 128), true)
 }

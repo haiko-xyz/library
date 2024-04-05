@@ -1,11 +1,11 @@
 // Core lib imports.
-use integer::BoundedU256;
+use core::integer::BoundedInt;
 
 // Local imports.
 use haiko_lib::math::fee_math::{calc_fee, gross_to_net, net_to_gross, net_to_fee, get_fee_inside};
 use haiko_lib::helpers::utils::approx_eq;
 use haiko_lib::types::core::{LimitInfo, Position};
-use haiko_lib::types::i128::I128Zeroable;
+use haiko_lib::types::i128::I128Trait;
 use haiko_lib::types::i256::I256Trait;
 
 ////////////////////////////////
@@ -13,7 +13,6 @@ use haiko_lib::types::i256::I256Trait;
 ////////////////////////////////
 
 #[test]
-#[available_gas(2000000000)]
 fn test_calc_fee() {
     let mut fee = calc_fee(0, 0);
     assert(fee == 0, 'calc_fee(0,0)');
@@ -33,19 +32,18 @@ fn test_calc_fee() {
     fee = calc_fee(100000, 100);
     assert(fee == 1000, 'calc_fee(10000,100)');
 
-    fee = calc_fee(BoundedU256::max(), 3333);
+    fee = calc_fee(BoundedInt::max(), 3333);
     assert(
         fee == 38593503342797487934676209303395679687494885889057999994351212749837446108991,
         'calc_fee(MAX,3333)'
     );
 
-    fee = calc_fee(BoundedU256::max(), 10000);
-    assert(fee == BoundedU256::max(), 'calc_fee(MAX,10000)');
+    fee = calc_fee(BoundedInt::max(), 10000);
+    assert(fee == BoundedInt::max(), 'calc_fee(MAX,10000)');
 }
 
 #[test]
 #[should_panic(expected: ('FeeRateOF',))]
-#[available_gas(2000000000)]
 fn test_calc_fee_overflow() {
     calc_fee(50000, 10001);
 }
@@ -55,7 +53,6 @@ fn test_calc_fee_overflow() {
 ////////////////////////////////
 
 #[test]
-#[available_gas(2000000000)]
 fn test_gross_to_net() {
     let mut net = gross_to_net(0, 0);
     assert(net == 0, 'gross_to_net(0,0)');
@@ -76,7 +73,7 @@ fn test_gross_to_net() {
     assert(net == 99000, 'gross_to_net(10000,100)');
 
     // Allow max deviation of 1
-    net = gross_to_net(BoundedU256::max(), 3333);
+    net = gross_to_net(BoundedInt::max(), 3333);
     assert(
         approx_eq(
             net, 77198585894518707488894775705292228165775098776582564045106371258075683530945, 1
@@ -84,13 +81,12 @@ fn test_gross_to_net() {
         'gross_to_net(MAX,3333)'
     );
 
-    net = gross_to_net(BoundedU256::max(), 10000);
+    net = gross_to_net(BoundedInt::max(), 10000);
     assert(net == 0, 'gross_to_net(MAX,10000)');
 }
 
 #[test]
 #[should_panic(expected: ('FeeRateOF',))]
-#[available_gas(2000000000)]
 fn test_gross_to_net_overflow() {
     gross_to_net(50000, 10001);
 }
@@ -100,7 +96,6 @@ fn test_gross_to_net_overflow() {
 ////////////////////////////////
 
 #[test]
-#[available_gas(2000000000)]
 fn test_net_to_gross() {
     let mut net = net_to_gross(0, 0);
     assert(net == 0, 'net_to_gross(0,0)');
@@ -124,24 +119,22 @@ fn test_net_to_gross() {
         net_to_gross(
             104212880313584575881213886507819117067942986199076507635511825607121816675942, 1000
         );
-    assert(net == BoundedU256::max(), 'net_to_gross(MAX*0.9,1000)');
+    assert(net == BoundedInt::max(), 'net_to_gross(MAX*0.9,1000)');
 
-    net = net_to_gross(BoundedU256::max(), 0);
-    assert(net == BoundedU256::max(), 'net_to_gross(MAX,0)');
+    net = net_to_gross(BoundedInt::max(), 0);
+    assert(net == BoundedInt::max(), 'net_to_gross(MAX,0)');
 }
 
 #[test]
 #[should_panic(expected: ('FeeRateOF',))]
-#[available_gas(2000000000)]
 fn test_net_to_gross_fee_rate_overflow() {
     net_to_gross(50000, 10001);
 }
 
 #[test]
 #[should_panic(expected: ('MulDivOF',))]
-#[available_gas(2000000000)]
 fn test_net_to_gross_amount_overflow() {
-    net_to_gross(BoundedU256::max(), 10);
+    net_to_gross(BoundedInt::max(), 10);
 }
 
 ////////////////////////////////
@@ -149,7 +142,6 @@ fn test_net_to_gross_amount_overflow() {
 ////////////////////////////////
 
 #[test]
-#[available_gas(2000000000)]
 fn test_net_to_fee() {
     let mut fee = net_to_fee(0, 0);
     assert(fee == 0, 'net_to_fee(0,0)');
@@ -190,7 +182,6 @@ fn test_net_to_fee() {
 
 #[test]
 #[should_panic(expected: ('FeeRateOF',))]
-#[available_gas(2000000000)]
 fn test_net_to_fee_overflow() {
     net_to_fee(50000, 10001);
 }
@@ -200,29 +191,25 @@ fn test_net_to_fee_overflow() {
 ////////////////////////////////
 
 #[test]
-#[available_gas(2000000000)]
 fn test_get_fee_inside_cases() {
-    let mut lower_limit_info = empty_limit_info();
-    let mut upper_limit_info = empty_limit_info();
+    let mut lower_limit_info = Default::default();
+    let mut upper_limit_info = Default::default();
 
     // Position is below current price
     let (_, _, mut base_factor, mut quote_factor) = get_fee_inside(
-        empty_position(), lower_limit_info, upper_limit_info, 0, 10, 15, 100, 200
+        Default::default(), lower_limit_info, upper_limit_info, 0, 10, 15, 100, 200
     );
-    assert(
-        base_factor == I256Trait::new(0, false) && quote_factor == I256Trait::new(0, false),
-        'gfi(0,10,15,100,200)'
-    );
+    assert(base_factor.val == 0 && quote_factor.val == 0, 'gfi(0,10,15,100,200)');
 
     // Position is above current price
     let (_, _, base_factor, quote_factor) = get_fee_inside(
-        empty_position(), lower_limit_info, upper_limit_info, 5, 10, 0, 100, 200
+        Default::default(), lower_limit_info, upper_limit_info, 5, 10, 0, 100, 200
     );
     assert(base_factor.val == 0 && quote_factor.val == 0, 'gfi(5,10,0,100,200)');
 
     // Position wraps current price, no fees accrued outside
     let (_, _, base_factor, quote_factor) = get_fee_inside(
-        empty_position(), lower_limit_info, upper_limit_info, 0, 10, 5, 100, 200
+        Default::default(), lower_limit_info, upper_limit_info, 0, 10, 5, 100, 200
     );
     assert(base_factor.val == 100 && quote_factor.val == 200, 'gfi(0,10,5,100,200)');
 
@@ -230,7 +217,7 @@ fn test_get_fee_inside_cases() {
     upper_limit_info.base_fee_factor = 25;
     upper_limit_info.quote_fee_factor = 50;
     let (_, _, base_factor, quote_factor) = get_fee_inside(
-        empty_position(), lower_limit_info, upper_limit_info, 0, 10, 5, 100, 200
+        Default::default(), lower_limit_info, upper_limit_info, 0, 10, 5, 100, 200
     );
     assert(base_factor.val == 75 && quote_factor.val == 150, 'gfi(0,10,5,100-25,200-50)');
 
@@ -240,7 +227,7 @@ fn test_get_fee_inside_cases() {
     lower_limit_info.base_fee_factor = 12;
     lower_limit_info.quote_fee_factor = 24;
     let (_, _, base_factor, quote_factor) = get_fee_inside(
-        empty_position(), lower_limit_info, upper_limit_info, 0, 10, 5, 100, 200
+        Default::default(), lower_limit_info, upper_limit_info, 0, 10, 5, 100, 200
     );
     assert(base_factor.val == 88 && quote_factor.val == 176, 'gfi(0,10,5,100-12,200-24)');
 
@@ -248,32 +235,7 @@ fn test_get_fee_inside_cases() {
     upper_limit_info.base_fee_factor = 25;
     upper_limit_info.quote_fee_factor = 50;
     let (_, _, base_factor, quote_factor) = get_fee_inside(
-        empty_position(), lower_limit_info, upper_limit_info, 0, 10, 5, 100, 200
+        Default::default(), lower_limit_info, upper_limit_info, 0, 10, 5, 100, 200
     );
     assert(base_factor.val == 63 && quote_factor.val == 126, 'gfi(0,10,5,100-12-25,200-24-50)');
-}
-
-////////////////////////////////
-// INTERNAL HELPERS
-////////////////////////////////
-
-fn empty_limit_info() -> LimitInfo {
-    LimitInfo {
-        liquidity: 0,
-        liquidity_delta: I128Zeroable::zero(),
-        quote_fee_factor: 0,
-        base_fee_factor: 0,
-        nonce: 0,
-    }
-}
-
-fn empty_position() -> Position {
-    Position {
-        market_id: 0,
-        lower_limit: 0,
-        upper_limit: 0,
-        liquidity: 0,
-        base_fee_factor_last: I256Trait::new(0, false),
-        quote_fee_factor_last: I256Trait::new(0, false),
-    }
 }

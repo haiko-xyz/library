@@ -1,21 +1,16 @@
-use traits::Into;
-use integer::BoundedU256;
-use debug::PrintTrait;
-
 use haiko_lib::math::price_math::{
     shift_limit, unshift_limit, limit_to_sqrt_price, sqrt_price_to_limit, price_to_limit, max_limit,
     offset
 };
 use haiko_lib::constants::{OFFSET, MAX_LIMIT, MIN_LIMIT, MIN_SQRT_PRICE, MAX_SQRT_PRICE, MAX_WIDTH};
-use haiko_lib::types::i32::{i32, I32Trait};
 use haiko_lib::helpers::utils::{approx_eq, approx_eq_pct};
+use haiko_lib::types::i32::{i32, I32Trait};
 
 ////////////////////////////////
 // TESTS - shift_limit, unshift_limit
 ////////////////////////////////
 
 #[test]
-#[available_gas(2000000000)]
 fn test_shift_limit_width_1_cases() {
     let mut limit: i32 = I32Trait::new(MIN_LIMIT, true);
     let mut width = 1;
@@ -35,7 +30,6 @@ fn test_shift_limit_width_1_cases() {
 }
 
 #[test]
-#[available_gas(2000000000)]
 fn test_shift_limit_width_gt_1_cases() {
     let mut limit: i32 = I32Trait::new(7906620, true);
     let mut width = 10;
@@ -54,7 +48,6 @@ fn test_shift_limit_width_gt_1_cases() {
 
 #[test]
 #[should_panic(expected: ('ShiftLimitUnderflow',))]
-#[available_gas(2000000000)]
 fn test_shift_limit_cases_underflow() {
     let limit: i32 = I32Trait::new(OFFSET + 1, true);
     let width = 10;
@@ -63,7 +56,6 @@ fn test_shift_limit_cases_underflow() {
 
 #[test]
 #[should_panic(expected: ('ShiftLimitOF',))]
-#[available_gas(2000000000)]
 fn test_shift_limit_cases_overflow() {
     let limit: i32 = I32Trait::new(MAX_LIMIT + 1, false);
     let width = 1;
@@ -71,7 +63,6 @@ fn test_shift_limit_cases_overflow() {
 }
 
 #[test]
-#[available_gas(2000000000)]
 fn test_unshift_limit_width_1_cases() {
     let mut limit: u32 = OFFSET + 1;
     let mut width = 1;
@@ -91,7 +82,6 @@ fn test_unshift_limit_width_1_cases() {
 }
 
 #[test]
-#[available_gas(2000000000)]
 fn test_unshift_limit_width_gt_1_cases() {
     let mut limit: u32 = 0;
     let mut width = 10;
@@ -113,7 +103,6 @@ fn test_unshift_limit_width_gt_1_cases() {
 ////////////////////////////////
 
 #[test]
-#[available_gas(2000000000)]
 fn test_limit_to_sqrt_price_width_1_cases() {
     let mut limit: u32 = OFFSET - MIN_LIMIT;
     let width = 1;
@@ -227,7 +216,6 @@ fn test_limit_to_sqrt_price_width_1_cases() {
 }
 
 #[test]
-#[available_gas(2000000000)]
 fn test_limit_to_sqrt_price_width_gt_1_cases() {
     let mut width = 20;
     let mut limit: u32 = offset(width) - 7906620;
@@ -269,7 +257,6 @@ fn test_limit_to_sqrt_price_width_gt_1_cases() {
 
 #[test]
 #[should_panic(expected: ('LimitOF',))]
-#[available_gas(2000000000)]
 fn test_limit_to_sqrt_price_limit_overflow() {
     let limit: u32 = OFFSET + MAX_LIMIT + 1;
     let width = 1;
@@ -278,7 +265,6 @@ fn test_limit_to_sqrt_price_limit_overflow() {
 
 #[test]
 #[should_panic(expected: ('WidthOF',))]
-#[available_gas(2000000000)]
 fn test_limit_to_sqrt_price_width_overflow() {
     let limit: u32 = OFFSET + 10000;
     let width = MAX_WIDTH + 1;
@@ -290,7 +276,6 @@ fn test_limit_to_sqrt_price_width_overflow() {
 ////////////////////////////////
 
 #[test]
-#[available_gas(2000000000)]
 fn test_sqrt_price_to_limit_width_1_cases() {
     let mut sqrt_price: u256 = MIN_SQRT_PRICE;
     let width = 1;
@@ -396,7 +381,6 @@ fn test_sqrt_price_to_limit_width_1_cases() {
 }
 
 #[test]
-#[available_gas(2000000000)]
 fn test_sqrt_price_to_limit_width_gt_1_cases() {
     let mut sqrt_price: u256 = 67776425709;
     let mut width = 20;
@@ -448,7 +432,6 @@ fn test_sqrt_price_to_limit_width_gt_1_cases() {
 
 #[test]
 #[should_panic(expected: ('SqrtPriceOF',))]
-#[available_gas(2000000000)]
 fn test_sqrt_price_to_limit_underflow() {
     let sqrt_price: u256 = MIN_SQRT_PRICE - 1;
     let width = 1;
@@ -457,7 +440,6 @@ fn test_sqrt_price_to_limit_underflow() {
 
 #[test]
 #[should_panic(expected: ('SqrtPriceOF',))]
-#[available_gas(2000000000)]
 fn test_sqrt_price_to_limit_overflow() {
     let sqrt_price: u256 = MAX_SQRT_PRICE + 1;
     let width = 1;
@@ -469,7 +451,6 @@ fn test_sqrt_price_to_limit_overflow() {
 ////////////////////////////////
 
 #[test]
-#[available_gas(2000000000)]
 fn test_price_to_limit() {
     let mut price: u256 = 1;
     let mut width = 1;
