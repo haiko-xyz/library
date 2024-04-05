@@ -2,21 +2,31 @@
 use core::result::ResultTrait;
 use starknet::ContractAddress;
 
-// Local imports.
-use haiko_lib::id;
+// Haiko imports.
 use haiko_lib::math::price_math;
+use haiko_lib::id;
 use haiko_lib::interfaces::IMarketManager::{
     IMarketManagerDispatcher, IMarketManagerDispatcherTrait
 };
 use haiko_lib::types::core::MarketInfo;
 use haiko_lib::types::i256::i256;
 use haiko_lib::helpers::params::{
-    CreateMarketParams, ModifyPositionParams, SwapParams, SwapMultipleParams
+    CreateMarketParams, ModifyPositionParams, SwapParams, SwapMultipleParams, TransferOwnerParams
 };
 
 // External imports.
 use snforge_std::{declare, ContractClass, ContractClassTrait, start_prank, stop_prank, CheatTarget};
 use openzeppelin::token::erc20::interface::{ERC20ABIDispatcher, ERC20ABIDispatcherTrait};
+
+// Note: requires access to the `amm` repo.
+pub fn deploy_market_manager(
+    class: ContractClass, owner: ContractAddress,
+) -> IMarketManagerDispatcher {
+    let contract_address = class
+        .deploy(@array![owner.into(), 'Haiko Liquidity Positions', 'HAIKO-LP'])
+        .unwrap();
+    IMarketManagerDispatcher { contract_address }
+}
 
 pub fn create_market(
     market_manager: IMarketManagerDispatcher, params: CreateMarketParams
@@ -51,6 +61,24 @@ pub fn create_market(
         );
     stop_prank(CheatTarget::One(market_manager.contract_address));
     market_id
+}
+
+pub fn create_market_without_whitelisting(
+    market_manager: IMarketManagerDispatcher, params: CreateMarketParams
+) -> felt252 {
+    start_prank(CheatTarget::One(market_manager.contract_address), params.owner);
+    market_manager
+        .create_market(
+            params.base_token,
+            params.quote_token,
+            params.width,
+            params.strategy,
+            params.swap_fee_rate,
+            params.fee_controller,
+            params.start_limit,
+            params.controller,
+            params.market_configs,
+        )
 }
 
 pub fn modify_position(
@@ -97,3 +125,12 @@ pub fn swap_multiple(market_manager: IMarketManagerDispatcher, params: SwapMulti
     amount_out
 }
 
+pub fn transfer_owner(market_manager: IMarketManagerDispatcher, params: TransferOwnerParams) -> () {
+    start_prank(CheatTarget::One(market_manager.contract_address), params.owner);
+    market_manager.transfer_owner(params.new_owner);
+}
+
+pub fn accept_owner(market_manager: IMarketManagerDispatcher, new_owner: ContractAddress) -> () {
+    start_prank(CheatTarget::One(market_manager.contract_address), new_owner);
+    market_manager.accept_owner();
+}

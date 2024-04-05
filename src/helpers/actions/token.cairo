@@ -17,6 +17,7 @@ pub fn declare_token() -> ContractClass {
     declare("ERC20")
 }
 
+// Note: requires access to the `amm` repo.
 pub fn deploy_token(class: ContractClass, params: ERC20ConstructorParams) -> ERC20ABIDispatcher {
     let mut constructor_calldata = ArrayTrait::<felt252>::new();
     params.name_.serialize(ref constructor_calldata);
