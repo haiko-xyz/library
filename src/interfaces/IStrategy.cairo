@@ -19,9 +19,6 @@ pub trait IStrategy<TContractState> {
     // Get strategy symbol.
     fn symbol(self: @TContractState) -> felt252;
 
-    // Get strategy version.
-    fn version(self: @TContractState) -> felt252;
-
     // Get a list of positions placed by the strategy on the market.
     fn placed_positions(self: @TContractState, market_id: felt252) -> Span<PositionInfo>;
 
