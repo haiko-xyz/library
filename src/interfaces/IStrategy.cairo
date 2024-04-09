@@ -14,10 +14,10 @@ pub trait IStrategy<TContractState> {
     fn market_manager(self: @TContractState) -> ContractAddress;
 
     // Get strategy name.
-    fn name(self: @TContractState) -> felt252;
+    fn name(self: @TContractState) -> ByteArray;
 
     // Get strategy symbol.
-    fn symbol(self: @TContractState) -> felt252;
+    fn symbol(self: @TContractState) -> ByteArray;
 
     // Get a list of positions placed by the strategy on the market.
     fn placed_positions(self: @TContractState, market_id: felt252) -> Span<PositionInfo>;
