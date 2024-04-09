@@ -18,10 +18,10 @@ pub struct DeployParams {
     pub owner: ContractAddress,
 }
 
-#[derive(Drop, Copy)]
+#[derive(Drop)]
 pub struct ERC20ConstructorParams {
-    pub name_: felt252,
-    pub symbol_: felt252,
+    pub name_: ByteArray,
+    pub symbol_: ByteArray,
     pub decimals: u8,
     pub initial_supply: u256,
     pub recipient: ContractAddress
@@ -119,18 +119,18 @@ pub fn default_deploy_params() -> DeployParams {
 pub fn default_token_params() -> (ContractAddress, ERC20ConstructorParams, ERC20ConstructorParams) {
     let treasury = treasury();
     let base_params = token_params(
-        'Ethereum', 'ETH', 18, to_e28(5000000000000000000000000000000000000000000), treasury
+        "Ethereum", "ETH", 18, to_e28(5000000000000000000000000000000000000000000), treasury
     );
     let quote_params = token_params(
-        'USDC', 'USDC', 18, to_e28(100000000000000000000000000000000000000000000), treasury
+        "USDC", "USDC", 18, to_e28(100000000000000000000000000000000000000000000), treasury
     );
     (treasury, base_params, quote_params)
 }
 
 pub fn token_params(
-    name_: felt252, symbol_: felt252, decimals: u8, initial_supply: u256, recipient: ContractAddress
+    name_: ByteArray, symbol_: ByteArray, decimals: u8, initial_supply: u256, recipient: ContractAddress
 ) -> ERC20ConstructorParams {
-    ERC20ConstructorParams { name_, symbol_, decimals, initial_supply, recipient }
+    ERC20ConstructorParams { name_: name_.clone(), symbol_: symbol_.clone(), decimals, initial_supply, recipient }
 }
 
 pub fn default_market_params() -> CreateMarketParams {

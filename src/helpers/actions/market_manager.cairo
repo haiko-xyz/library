@@ -22,8 +22,18 @@ use openzeppelin::token::erc20::interface::{ERC20ABIDispatcher, ERC20ABIDispatch
 pub fn deploy_market_manager(
     class: ContractClass, owner: ContractAddress,
 ) -> IMarketManagerDispatcher {
+    let name: ByteArray = "Haiko Liquidity Positions";
+    let symbol: ByteArray = "HAIKO-LP";
+    let token_uri: ByteArray = "https://app.haiko.xyz/api/v1/position?network=mainnet&id=";
+
+    let mut calldata = array![];
+    owner.serialize(ref calldata);
+    name.serialize(ref calldata);
+    symbol.serialize(ref calldata);
+    token_uri.serialize(ref calldata);
+
     let contract_address = class
-        .deploy(@array![owner.into(), 'Haiko Liquidity Positions', 'HAIKO-LP'])
+        .deploy(@calldata)
         .unwrap();
     IMarketManagerDispatcher { contract_address }
 }
