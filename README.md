@@ -6,7 +6,7 @@ This repo contains common libraries, interfaces, types and other utilities for t
 
 ```shell
 # Run the tests
-scarb test
+snforge test
 
 # Build contracts
 scarb build
