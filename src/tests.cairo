@@ -8,6 +8,6 @@ pub(crate) mod test_math;
 pub(crate) mod test_math_invariants;
 pub(crate) mod test_price_math;
 pub(crate) mod test_price_math_invariants;
-
 // Disabled: used for quickly generating ids
 // pub(crate) mod test_id;
+
