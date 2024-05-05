@@ -19,9 +19,6 @@ pub trait IMarketManager<TContractState> {
     // Whether market is whitelisted for creation.
     fn is_market_whitelisted(self: @TContractState, market_id: felt252) -> bool;
 
-    // Whether token is whitelisted (allows creation of unowned and non-strategy markets).
-    fn is_token_whitelisted(self: @TContractState, token: ContractAddress) -> bool;
-
     // Get base token for market.
     fn base_token(self: @TContractState, market_id: felt252) -> ContractAddress;
 
@@ -439,13 +436,6 @@ pub trait IMarketManager<TContractState> {
     // # Arguments
     // * `market_ids` - array of market ids
     fn whitelist_markets(ref self: TContractState, market_ids: Array<felt252>);
-
-    // Whitelist tokens.
-    // Callable by owner only.
-    //
-    // # Arguments
-    // * `tokens` - array of token addresses
-    fn whitelist_tokens(ref self: TContractState, tokens: Array<ContractAddress>);
 
     // Sweeps excess tokens from contract.
     // Used to collect tokens sent to contract by mistake.

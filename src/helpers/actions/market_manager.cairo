@@ -1,6 +1,7 @@
 // Core lib imports.
 use core::result::ResultTrait;
 use starknet::ContractAddress;
+use starknet::contract_address_const;
 
 // Haiko imports.
 use haiko_lib::math::price_math;
@@ -44,7 +45,10 @@ pub fn create_market(
         }
     );
     let whitelisted = market_manager.is_market_whitelisted(market_id);
-    if !whitelisted {
+    if (params.strategy != contract_address_const::<0x0>()
+        || params.fee_controller != contract_address_const::<0x0>()
+        || params.controller != contract_address_const::<0x0>())
+        && !whitelisted {
         market_manager.whitelist_markets(array![market_id]);
     }
     let market_id = market_manager
